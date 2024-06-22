@@ -1,63 +1,133 @@
-# ErrorHandling Smart Contract
+# Basic Grading System Smart Contract
 
-## Overview
+This is a simple smart contract implemented in Solidity that manages a basic grading system. The contract allows adding students, updating their grades, retrieving their grades, and resetting their grades.
 
-This is a simple Solidity smart contract designed to demonstrate basic error handling mechanisms in the Ethereum blockchain. The contract includes functions that utilize `require`, `assert`, and `revert` statements to enforce certain conditions and handle errors gracefully.
+## Prerequisites
+
+- Solidity ^0.8.0
 
 ## Features
 
-- **setValue**: Sets the contract's state variable `value` with a requirement that the value must be greater than zero.
-- **resetValue**: Resets the state variable `value` to zero and asserts that the reset was successful.
-- **revertIfTooHigh**: Reverts the transaction if the provided value is greater than 100.
+1. **Add a Student**: Adds a new student with an ID, name, and grade.
+2. **Update Grade**: Updates the grade of an existing student.
+3. **Get Grade**: Retrieves the grade of a specific student.
+4. **Reset Grade**: Resets the grade of a student to 0.
 
-## Executing program
+## Contract Details
+
 
 To run this program, you can use Remix, an online Solidity IDE. To get started, go to the Remix website at https://remix.ethereum.org/.
 
-Once you are on the Remix website, create a new file by clicking on the "+" icon in the left-hand sidebar. Save the file with a .sol extension (e.g., xyz.sol). Copy and paste the following [Code file](errorhandling.sol) into that file.
-
-## Functions
-
-### setValue(uint _value)
-
-This function sets the `value` state variable. It uses a `require` statement to ensure that the provided value is greater than zero.
-
-#### Parameters:
-- `_value` (uint): The value to be set. Must be greater than zero.
-
-#### Usage:
+Once you are on the Remix website, create a new file by clicking on the "+" icon in the left-hand sidebar. Save the file with a .sol extension (e.g., xyz.sol). Copy and paste the following code into that file:
 ```solidity
-function setValue(uint _value) public {
-    require(_value > 0, "Value must be greater than zero");
-    value = _value;
-}
-```
-### resetValue()
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
 
-This function resets the `value` state variable to zero. It uses an `assert` statement to ensure that the reset operation was successful.
+contract BasicGradingSystem {
+    struct Student {
+        uint id;
+        string name;
+        uint grade;
+    }
 
-#### Usage:
-```solidity
-function resetValue() public {
-    value = 0;
-    assert(value == 0);
-}
-```
-### revertIfTooHigh(uint _value)
+    mapping(uint => Student) private students;
 
-This function reverts the transaction if the provided value is greater than 100. It uses a `revert` statement for this purpose.
+    // Function to add a new student
+    function addStudent(uint _id, string memory _name, uint _grade) public {
+        // Ensure the grade is between 0 and 100
+        require(_grade <= 100, "Grade must be between 0 and 100");
 
-#### Parameters:
-- `_value` (uint): The value to be checked. Must be 100 or less.
+        students[_id] = Student(_id, _name, _grade);
+    }
 
-#### Usage:
-```solidity
-function revertIfTooHigh(uint _value) public pure {
-    if (_value > 100) {
-        revert("Value must be 100 or less");
+    // Function to update a student's grade
+    function updateGrade(uint _id, uint _newGrade) public {
+        // Ensure the grade is between 0 and 100
+        require(_newGrade <= 100, "Grade must be between 0 and 100");
+
+        students[_id].grade = _newGrade;
+    }
+
+    // Function to get a student's grade
+    function getGrade(uint _id) public view returns (uint) {
+        // Revert if the student does not exist
+        if (bytes(students[_id].name).length == 0) {
+            revert("Student does not exist");
+        }
+
+        return students[_id].grade;
+    }
+
+    // Function to reset a student's grade
+    function resetGrade(uint _id) public {
+        students[_id].grade = 0;
+
+        // Ensure the grade is reset to zero
+        assert(students[_id].grade == 0);
     }
 }
 ```
+
+### Functions
+
+### `addStudent`
+
+Adds a new student with the specified ID, name, and grade.
+
+**Parameters:**
+- `_id` (uint): Student ID.
+- `_name` (string): Student name.
+- `_grade` (uint): Initial grade of the student (must be between 0 and 100).
+
+**Usage:**
+```solidity
+function addStudent(uint _id, string memory _name, uint _grade) public
+```
+
+## `updateGrade`
+
+Updates the grade for the student with the specified ID.
+
+**Parameters:**
+- `_id` (uint): Student ID.
+- `_newGrade` (uint): New grade to update (must be between 0 and 100).
+
+**Usage:**
+```solidity
+function updateGrade(uint _id, uint _newGrade) public
+```
+
+## `getGrade`
+
+Retrieves the grade of the student with the specified ID.
+
+**Parameters:**
+- `_id` (uint): Student ID.
+
+**Returns:**
+- (uint): Grade of the student.
+
+**Usage:**
+```solidity
+function getGrade(uint _id) public view returns (uint)
+```
+
+## `resetGrade`
+
+Resets the grade of the student with the specified ID to 0.
+
+**Parameters:**
+- `_id` (uint): Student ID.
+
+**Usage:**
+```solidity
+function resetGrade(uint _id) public
+```
+
+**Notes:**
+
+The `resetGrade` function uses `assert` to ensure the grade is reset to zero.
+
 ## Error Handling Mechanisms
 
 ### require
