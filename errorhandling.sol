@@ -1,30 +1,46 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-contract ErrorHandling {
-    uint public value;
-
-    // Function to set the value with require check
-    function setValue(uint _value) public {
-        // Ensure the value is greater than zero
-        require(_value > 0, "Value must be greater than zero");
-        value = _value;
+contract BasicGradingSystem {
+    struct Student {
+        uint id;
+        string name;
+        uint grade;
     }
 
-    // Function to reset the value with assert check
-    function resetValue() public {
-        // Set value to zero
-        value = 0;
+    mapping(uint => Student) private students;
 
-        // Ensure the value is reset to zero
-        assert(value == 0);
+    // Function to add a new student
+    function addStudent(uint _id, string memory _name, uint _grade) public {
+        // Ensure the grade is between 0 and 100
+        require(_grade <= 100, "Grade must be between 0 and 100");
+
+        students[_id] = Student(_id, _name, _grade);
     }
 
-    // Function to revert if a condition is not met
-    function revertIfTooHigh(uint _value) public pure {
-        // Revert if the value is greater than 100
-        if (_value > 100) {
-            revert("Value must be 100 or less");
+    // Function to update a student's grade
+    function updateGrade(uint _id, uint _newGrade) public {
+        // Ensure the grade is between 0 and 100
+        require(_newGrade <= 100, "Grade must be between 0 and 100");
+
+        students[_id].grade = _newGrade;
+    }
+
+    // Function to get a student's grade
+    function getGrade(uint _id) public view returns (uint) {
+        // Revert if the student does not exist
+        if (bytes(students[_id].name).length == 0) {
+            revert("Student does not exist");
         }
+
+        return students[_id].grade;
+    }
+
+    // Function to reset a student's grade
+    function resetGrade(uint _id) public {
+        students[_id].grade = 0;
+
+        // Ensure the grade is reset to zero
+        assert(students[_id].grade == 0);
     }
 }
