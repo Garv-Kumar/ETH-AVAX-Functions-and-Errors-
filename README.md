@@ -23,7 +23,7 @@ Once you are on the Remix website, create a new file by clicking on the "+" icon
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-contract BasicGradingSystem {
+contract SchoolGradingSystem {
     struct Student {
         uint id;
         string name;
@@ -31,41 +31,37 @@ contract BasicGradingSystem {
     }
 
     mapping(uint => Student) private students;
+    mapping(uint => bool) private studentExists;
 
-    // Function to add a new student
     function addStudent(uint _id, string memory _name, uint _grade) public {
-        // Ensure the grade is between 0 and 100
         require(_grade <= 100, "Grade must be between 0 and 100");
+        require(!studentExists[_id], "Student already exists");
 
         students[_id] = Student(_id, _name, _grade);
+        studentExists[_id] = true;
     }
 
-    // Function to update a student's grade
     function updateGrade(uint _id, uint _newGrade) public {
-        // Ensure the grade is between 0 and 100
         require(_newGrade <= 100, "Grade must be between 0 and 100");
+        require(studentExists[_id], "Student does not exist");
 
         students[_id].grade = _newGrade;
     }
 
-    // Function to get a student's grade
     function getGrade(uint _id) public view returns (uint) {
-        // Revert if the student does not exist
-        if (bytes(students[_id].name).length == 0) {
-            revert("Student does not exist");
-        }
+        require(studentExists[_id], "Student does not exist");
 
         return students[_id].grade;
     }
 
-    // Function to reset a student's grade
     function resetGrade(uint _id) public {
-        students[_id].grade = 0;
+        require(studentExists[_id], "Student does not exist");
 
-        // Ensure the grade is reset to zero
+        students[_id].grade = 0;
         assert(students[_id].grade == 0);
     }
 }
+
 ```
 
 ### Functions
